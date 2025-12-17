@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Models\Company;
-use App\Models\Role;
+use App\Enums\Role;
 use App\Models\User;
 use App\Http\Requests\StoreCompanyUserRequest;
 use App\Http\Requests\StoreUserRequest;
@@ -24,19 +24,25 @@ class CompanyUserController extends Controller
         // abort(403);
     // }
 
-    Gates::authorize('view', $company);
+//     Gate::authorize('viewAny', $company);
 
- $users = $company->users()
-        ->where('role_id', 2) // COMPANY_OWNER
-        ->get();    
-    return view('companies.users.index', compact('company', 'users'));
+//  $users = $company->users()
+//         ->where('role_id', 2) // COMPANY_OWNER
+//         ->get();    
+//     return view('companies.users.index', compact('company', 'users'));
+
+Gate::authorize('view', $company);
+
+    $users = $company->users()->get();
+ 
+        return view('companies.users.index', compact('company', 'users'));
 
 
 
     }
    
 
-     public function create(company $company)
+     public function create(Company $company)
     {
         Gate::authorize('create', $company);
         return view('companies.users.create', compact('company'));
@@ -47,11 +53,24 @@ class CompanyUserController extends Controller
     {
         Gate::authorize('create', $company);
 
+        // if (auth()->user()->isCompanyOwner() && auth()->user()->company_id !== $company->id) {
+        //     abort(403);
+        // }
+        
+        // $company->users()->create([
+        //     'name' => $request->name,
+        // 'email' => $request->email,
+        // 'password' => bcrypt($request->password),
+        // 'role_id' => 2, 
+        // ]);
+ 
+        // return redirect()->route('companies.users.index', $company->id);
+
         $company->users()->create([
             'name' => $request->name,
-        'email' => $request->email,
-        'password' => bcrypt($request->password),
-        'role_id' => 2, 
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role_id' => Role::COMPANY_OWNER->value,
         ]);
  
         return redirect()->route('companies.users.index', $company->id);
@@ -70,7 +89,7 @@ class CompanyUserController extends Controller
 
         $user->update($request->validated());
  
-        return redirect()->route('companies.users.index', $company->id);
+        return redirect()->route('companies.users.index', $company);
 
     }
 
@@ -78,9 +97,18 @@ class CompanyUserController extends Controller
     {
         Gate::authorize('delete', $company);
 
+        // if (auth()->user()->isCompanyOwner() && $user->company_id !== $company->id) {
+        //     abort(403);
+        // }
         $user->delete();
- 
-        return to_route('companies.users.index', $company);
+
+        return redirect()->route('companies.users.index', $company);
+
+    //     abort_if($user->company_id !== $company->id, 403);
+
+    // $user->delete();
+
+    // return redirect()->route('companies.users.index', $company->id);
 
     }
 }

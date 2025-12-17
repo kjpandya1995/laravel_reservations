@@ -16,7 +16,11 @@ class IsAdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        abort_if($request->user()->role_id !== Role::ADMINISTRATOR->value, Response::HTTP_FORBIDDEN);
+        $user = $request->user();
+        
+        if ($user->role_id !== Role::ADMINISTRATOR->value && $user->role_id !== Role::COMPANY_OWNER->value ) {
+            abort(Response::HTTP_FORBIDDEN);
+        }
 
         return $next($request);
     }

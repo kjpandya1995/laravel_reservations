@@ -31,10 +31,10 @@ class CompanyUserPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, company $company): bool
-    {
-        return false;
-    }
+    // public function view(User $user, Company $company): bool
+    // {
+    //     return false;
+    // }
 
     /**
      * Determine whether the user can create models.
@@ -63,7 +63,7 @@ class CompanyUserPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, company $company): bool
+    public function restore(User $user, Company $company): bool
     {
         return false;
     }
@@ -71,7 +71,7 @@ class CompanyUserPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, company $company): bool
+    public function forceDelete(User $user, Company $company): bool
     {
         return false;
     }

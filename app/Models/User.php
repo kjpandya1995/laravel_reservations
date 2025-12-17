@@ -7,14 +7,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Enums\Role as RoleEnum;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use  HasFactory, Notifiable;
     use SoftDeletes;
+
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -35,6 +38,15 @@ class User extends Authenticatable
     public function company(): BelongTo
     {
         return $this->belongsTo(Company::class);
+    }
+    public function isAdmin(): bool
+    {
+        return $this->role_id === RoleEnum::ADMINISTRATOR->value;
+    }
+
+    public function isCompanyOwner(): bool
+    {
+        return $this->role_id === RoleEnum::COMPANY_OWNER->value;
     }
 
     /**
