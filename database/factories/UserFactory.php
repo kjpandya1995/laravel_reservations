@@ -63,7 +63,7 @@ class UserFactory extends Factory
 
     public function guide(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn () => [
             'role_id' => Role::GUIDE->value,
         ]);
     }

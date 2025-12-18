@@ -49,6 +49,8 @@ class User extends Authenticatable
         return $this->role_id === RoleEnum::COMPANY_OWNER->value;
     }
 
+     
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -72,3 +74,13 @@ class User extends Authenticatable
         ];
     }
 }
+
+
+// 1. Ek company banayein (agar nahi hai)
+$company = App\Models\Company::firstOrCreate(['name' => 'My Test Company']);
+
+
+$user = App\Models\User::where('email', 'owner@example.com')->first();
+$user->company_id = $company->id;
+$user->role_id = 2; 
+$user->save();

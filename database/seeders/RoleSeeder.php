@@ -18,11 +18,20 @@ class RoleSeeder extends Seeder
         // Role::create(['name' => 'customer']);
         // Role::create(['name' => 'guide']);
 
-         Role::insert([
-        ['id' => 1, 'name' => 'ADMINISTRATOR'],
-        ['id' => 2, 'name' => 'COMPANY_OWNER'],
-        ['id' => 3, 'name' => 'CUSTOMER'],
-        ['id' => 4, 'name' => 'GUIDE'],
+         \App\Models\Role::insert([
+        ['id' => 1, 'name' => 'Administrator'],
+        ['id' => 2, 'name' => 'Company Owner'],
+        ['id' => 3, 'name' => 'Customer'],
+        ['id' => 4, 'name' => 'Guide'],
     ]);
     }
 }
+
+
+$user = App\Models\User::create([
+    'name' => 'Krishna',
+    'email' => 'kdthaker95@gmail.com',
+    'password' => Hash::make('Laravel@12'),
+    'role_id' => 2, 
+    'company_id' => $company->id 
+]);

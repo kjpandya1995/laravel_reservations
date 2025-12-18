@@ -14,8 +14,11 @@ class CompanyGuideController extends Controller
 {
     public function index(Company $company)
     {
-        Gate::authorize('viewAny', $company);
+        // $guide = new Guide(['company_id' => $company->id]);
+
+        Gate::authorize('view', $company);
  
+        // $guides = $company->guides()->get();
         $guides = $company->users()->where('role_id', Role::COMPANY_OWNER->value)->get();
  
         return view('companies.guides.index', compact('company', 'guides'));

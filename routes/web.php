@@ -5,6 +5,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CompanyController;;
 use App\Http\Controllers\CompanyUserController;
 use App\Http\Controllers\CompanyGuideController;
+use App\Http\Controllers\CompanyActivityController;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -26,9 +28,17 @@ Route::middleware('auth')->group(function () {
     Route::resource('companies.users', CompanyUserController::class)
         ->except('show')
         ->middleware('isAdmin');
-});
-    Route::resource('companies.guides', CompanyGuideController::class)->except('show'); 
+        Route::resource('companies.guides', CompanyGuideController::class)->except('show'); 
     Route::resource('companies.activities', CompanyActivityController::class);
+
+//     Route::get(
+//     '/companies/{company}/activities',
+//     [CompanyActivityController::class, 'index']
+// )->name('companies.activities.index');
+});
+    
+
+
 
 
 require __DIR__.'/auth.php';

@@ -9,27 +9,34 @@
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
+   <div class="text-red-500 text-xs">
+    Role ID: {{ auth()->user()->name }}
+</div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    @if(auth()->user()->role_id === \App\Enums\Role::ADMINISTRATOR->value)
+
+  
+                    @if(auth()->user()->isAdmin())
                     <x-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.index')">
                         {{ __('Companies') }}
                     </x-nav-link>
+            
                     @endif
-                     @if(auth()->user()->role_id === \App\Enums\Role::COMPANY_OWNER->value) 
-                        <x-nav-link :href="route('companies.users.index', auth()->user()->company_id)" :active="request()->routeIs('companies.users.*')">
+                     @if(auth()->user()->isCompanyOwner() && auth()->user()->company_id) 
+                   
+                        <x-nav-link :href="route('companies.users.index', ['company' => auth()->user()->company_id])" :active="request()->routeIs('companies.users.*')">
                             {{ __('Administrators') }}
                         </x-nav-link>
                         <x-nav-link :href="route('companies.guides.index', auth()->user()->company_id)" :active="request()->routeIs('companies.guides.*')"> 
                             {{ __('Guides') }}
                         </x-nav-link> 
                         <x-nav-link :href="route('companies.activities.index', auth()->user()->company_id)" :active="request()->routeIs('companies.activities.*')"> 
-            {{ __('Activities') }}
-        </x-nav-link> 
+                            {{ __('Activities') }}
+                        </x-nav-link> 
                     @endif 
                 </div>
             </div>
@@ -114,3 +121,6 @@
         </div>
     </div>
 </nav>
+
+
+
