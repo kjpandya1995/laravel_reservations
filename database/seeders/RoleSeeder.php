@@ -13,11 +13,7 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        // Role::create(['name' => 'administrator']);
-        // Role::create(['name' => 'company owner']);
-        // Role::create(['name' => 'customer']);
-        // Role::create(['name' => 'guide']);
-
+      
          \App\Models\Role::insert([
         ['id' => 1, 'name' => 'Administrator'],
         ['id' => 2, 'name' => 'Company Owner'],
@@ -26,12 +22,3 @@ class RoleSeeder extends Seeder
     ]);
     }
 }
-
-
-$user = App\Models\User::create([
-    'name' => 'Krishna',
-    'email' => 'kdthaker95@gmail.com',
-    'password' => Hash::make('Laravel@12'),
-    'role_id' => 2, 
-    'company_id' => $company->id 
-]);
