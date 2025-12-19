@@ -19,6 +19,7 @@ class CompanyActivityController extends Controller
 {
     public function index(Company $company)
     {
+        Gate::authorize('viewAny', $company); 
         $company->load('activities');
  
         return view('companies.activities.index', compact('company'));
@@ -26,6 +27,7 @@ class CompanyActivityController extends Controller
  
     public function create(Company $company)
     {
+        Gate::authorize('create', $company); 
         $guides = User::where('company_id', $company->id)
             ->where('role_id', Role::GUIDE->value)
             ->pluck('name', 'id');
@@ -35,6 +37,7 @@ class CompanyActivityController extends Controller
  
     public function store(StoreActivityRequest $request, Company $company)
     {
+        Gate::authorize('create', $company);
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('activities', 'public');
         }
@@ -60,6 +63,7 @@ class CompanyActivityController extends Controller
  
     public function update(UpdateActivityRequest $request, Company $company, Activity $activity)
     {
+        Gate::authorize('update', $company); 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('activities', 'public');
             if ($activity->photo) {
@@ -76,6 +80,7 @@ class CompanyActivityController extends Controller
  
     public function destroy(Company $company, Activity $activity)
     {
+        Gate::authorize('delete', $company);
         $activity->delete();
  
         return to_route('companies.activities.index', $company);

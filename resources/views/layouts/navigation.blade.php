@@ -10,7 +10,7 @@
                     </a>
                 </div>
    <div class="text-red-500 text-xs">
-    Role ID: {{ auth()->user()->name }}
+    Role: {{ auth()->user()->role_id }} | Company: {{ auth()->user()->company_id ?? 'N/A' }}
 </div>
 
                 <!-- Navigation Links -->
