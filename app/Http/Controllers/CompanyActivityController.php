@@ -19,7 +19,7 @@ class CompanyActivityController extends Controller
 {
     public function index(Company $company)
     {
-        Gate::authorize('viewAny', $company); 
+        Gate::authorize('view', $company); 
         $company->load('activities');
  
         return view('companies.activities.index', compact('company'));

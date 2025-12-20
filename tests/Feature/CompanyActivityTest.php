@@ -24,7 +24,7 @@ class CompanyActivityTest extends TestCase
         $company = Company::factory()->create();
         $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
  
-        $response = $this->actingAs($user)->get(route('companies.activities.index', $company, $company));
+        $response = $this->actingAs($user)->get(route('companies.activities.index', $company));
  
         $response->assertOk();
     }
