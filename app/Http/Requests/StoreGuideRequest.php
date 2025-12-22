@@ -23,9 +23,24 @@ class StoreGuideRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            // 'name' => 'required|string',
+            // // 'email' => 'required|email|unique:users,email',
+            // // 'password' => 'required|min:6',
+            // 'email' => ['required', 'email', 'unique:users,email', 'unique:user_invitations,email'], 
+            'email' => [
+            'required',
+            'email',
+            Rule::unique('user_invitations', 'email')
+                ->where('company_id', $this->company->id),
+        ],
+
         ];
     }
+
+    public function messages(): array 
+    {
+        return [
+            'email.unique' => 'Invitation with this email address already requested.'
+        ];
+    } 
 }

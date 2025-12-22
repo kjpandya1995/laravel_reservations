@@ -10,6 +10,10 @@ use App\Models\User;
 use App\Http\Requests\StoreCompanyUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\UserInvitation;
+use Illuminate\Support\Str;
+use App\Mail\RegistrationInvite;
+use Illuminate\Support\Facades\Mail;
 
 
 class CompanyUserController extends Controller
@@ -53,28 +57,48 @@ Gate::authorize('view', $company);
     {
         Gate::authorize('create', $company);
 
-        // if (auth()->user()->isCompanyOwner() && auth()->user()->company_id !== $company->id) {
-        //     abort(403);
-        // }
-        
+    
         // $company->users()->create([
         //     'name' => $request->name,
-        // 'email' => $request->email,
-        // 'password' => bcrypt($request->password),
-        // 'role_id' => 2, 
+        //     'email' => $request->email,
+        //     'password' => bcrypt($request->password),
+        //     'role_id' => Role::COMPANY_OWNER->value,
+        //     'company_id' => auth()->user()->company_id,
         // ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'company_id' => $company->id,
+            'role_id' => Role::COMPANY_OWNER->value,
+            'password' => bcrypt(Str::random(10)),
+        ]);
  
         // return redirect()->route('companies.users.index', $company->id);
 
-        $company->users()->create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role_id' => Role::COMPANY_OWNER->value,
-        ]);
+        //  $invitation = UserInvitation::create([
+        //     'email' => $request->input('email'),
+        //     'token' => Str::uuid(),
+        //     'company_id' => $company->id,
+        //     'role_id' => Role::COMPANY_OWNER->value,
+        // ]);
+
+        $invitation = UserInvitation::create([
+        'email' => $user->email,
+        'token' => Str::uuid(),
+        'company_id' => $company->id,
+        'role_id' => Role::COMPANY_OWNER->value,
+    ]);
  
-        return redirect()->route('companies.users.index', $company->id);
+        // Mail::to($request->input('email'))->send(new RegistrationInvite($invitation));
+        Mail::to($user->email)->send(new RegistrationInvite($invitation));
+
+        // return to_route('companies.users.index', $company);
+
+        return redirect()->route('companies.users.index', $company);
     }
+
+    
  
      public function edit(Company $company, User $user)
     {

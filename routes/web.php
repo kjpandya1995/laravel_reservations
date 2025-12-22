@@ -6,7 +6,7 @@ use App\Http\Controllers\CompanyController;;
 use App\Http\Controllers\CompanyUserController;
 use App\Http\Controllers\CompanyGuideController;
 use App\Http\Controllers\CompanyActivityController;
-
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,7 +20,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+Route::post('/users', [UserController::class, 'store']);
 
 // Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
     Route::resource('companies', CompanyController::class)->middleware('isAdmin');
