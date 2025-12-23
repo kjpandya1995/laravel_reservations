@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserInvitation;
+
 use Illuminate\Http\Request;
 use App\Enums\Role;
 use Illuminate\Support\Facades\Hash;
@@ -10,7 +12,6 @@ use App\Models\Company;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreGuideRequest;
 use App\Http\Requests\UpdateGuideRequest;
-use App\Models\UserInvitation;
 use Illuminate\Support\Str;
 use App\Mail\RegistrationInvite;
 use Illuminate\Support\Facades\Mail;
@@ -22,12 +23,14 @@ class CompanyGuideController extends Controller
         Gate::authorize('view', $company);
  
         // $guides = $company->users()->where('role_id', Role::GUIDE->value)->get();
-        $guides = User::where('company_id', $company->id)
-              ->where('role_id', Role::GUIDE->value)
-              ->get();
+        // $guides = User::where('company_id', $company->id)
+        //       ->where('role_id', Role::GUIDE->value)
+        //       ->get();
+
+        $guides = $company->users()->where('role_id', Role::GUIDE->value)->get();
  
         // return view('companies.guides.index', compact('company', 'guides'));
-        return view('guides.index', compact('guides'));
+        return view('companies.guides.index', compact('guides', 'company'));
     }
  
     public function create(Company $company)
@@ -41,23 +44,35 @@ class CompanyGuideController extends Controller
     {
         Gate::authorize('create', $company);
  
-        // $company->users()->create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => bcrypt($request->password),
-        //     'role_id' => Role::GUIDE->value,          
-        // 'company_id' => auth()->user()->company_id, 
-        // ]);
- 
-        // return to_route('companies.guides.index', $company);
-
-        $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'company_id' => $company->id,
-        'role_id' => Role::GUIDE->value,
-        'password' => bcrypt(Str::random(10)),
-    ]);
+        // Check for existing invitation
+        $existingInvitation = UserInvitation::where('email', $request->email)
+            ->whereNull('registered_at')
+            ->first();
+            
+        if ($existingInvitation) {
+            return back()->withErrors(['email' => 'Invitation with this email address already requested.']);
+        }
+        
+        // Check if name is provided (full user creation) or just email (invitation only)
+        if ($request->has('name')) {
+            // Create full user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'company_id' => $company->id,
+                'role_id' => Role::GUIDE->value,
+                'password' => bcrypt($request->password ?? Str::random(10)),
+            ]);
+        } else {
+            // Create user with minimal data for invitation
+            $user = User::create([
+                'name' => 'Pending User',
+                'email' => $request->email,
+                'company_id' => $company->id,
+                'role_id' => Role::GUIDE->value,
+                'password' => bcrypt(Str::random(10)),
+            ]);
+        }
 
         $invitation = UserInvitation::create([
             'email' =>  $user->email,
@@ -66,8 +81,6 @@ class CompanyGuideController extends Controller
             'role_id' => Role::GUIDE->value,
         ]);
  
-        // Mail::to($request->input('email'))->send(new RegistrationInvite($invitation));
-
         Mail::to($user->email)
         ->send(new RegistrationInvite($invitation));
  
@@ -99,16 +112,15 @@ public function update(Request $request, Company $company, User $guide)
 
     // 1. Validate data
     $request->validate([
+        'name' => 'required|string|max:255',
         'email' => 'required|email',
     ]);
 
-    // 2. Update guide email
+    // 2. Update guide
     $guide->update([
+        'name' => $request->name,
         'email' => $request->email
     ]);
-
-    Mail::to($request->email)
-    ->send(new UserRegistrationInvite($invitation));
 
    return redirect()->route('companies.guides.index', $company);
 }

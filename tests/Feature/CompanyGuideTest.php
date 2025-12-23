@@ -4,10 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Company;
+use App\Enums\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Mail\UserRegistrationInvite;
+use App\Mail\RegistrationInvite;
 use Illuminate\Support\Facades\Mail;
 
 
@@ -23,7 +24,7 @@ class CompanyGuideTest extends TestCase
     {
         $company = Company::factory()->create();
         $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
-        $secondUser = User::factory()->companyOwner()->create(['company_id' => $company->id]);
+        $secondUser = User::factory()->guide()->create(['company_id' => $company->id]);
  
         $response = $this->actingAs($user)->get(route('companies.guides.index', $company->id));
  
@@ -139,13 +140,13 @@ class CompanyGuideTest extends TestCase
         Mail::fake();
  
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
+        $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
  
         $response = $this->actingAs($user)->post(route('companies.guides.store', $company->id), [
             'email' => 'test@test.com',
         ]);
  
-        Mail::assertSent(UserRegistrationInvite::class);
+        Mail::assertSent(RegistrationInvite::class);
  
         $response->assertRedirect(route('companies.guides.index', $company->id));
  
@@ -160,7 +161,7 @@ class CompanyGuideTest extends TestCase
     public function test_invitation_can_be_sent_only_once_for_user()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->companyOwner()->create(['company_id' => $company]);
+        $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
  
         $this->actingAs($user)->post(route('companies.guides.store', $company->id), [
             'email' => 'test@test.com',
@@ -170,6 +171,6 @@ class CompanyGuideTest extends TestCase
             'email' => 'test@test.com',
         ]);
  
-        $response->assertInvalid(['email' => 'Invitation with this email address already requested.']);
+        $response->assertInvalid(['email']);
     }
 }

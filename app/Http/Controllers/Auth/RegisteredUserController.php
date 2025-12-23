@@ -54,64 +54,35 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        // $invitation = UserInvitation::where('token', $request->token)->first();
+        // Get invitation token from request or session
+        $invitationToken = $request->input('invitation_token') ?? session('invitation_token');
+        $invitation = null;
 
-        // if (!$invitation) {
-        //     abort(403, 'Invalid or expired invitation.');
-        // }
-        // $invitationToken = session('invitation_token');
-
-    $invitation = null;
-
-    if (session()->has('invitation_token')) {
-        $invitation = UserInvitation::where('token', session('invitation_token'))->first();
-    }
-
-        // if ($request->session()->get('invitation_token')) { 
-        //     $invitation = UserInvitation::where('token', $request->session()->get('invitation_token'))
-        //         ->where('email', $request->email)
-        //         ->whereNull('registered_at')
-        //         ->firstOr(fn() => throw ValidationException::withMessages(['invitation' => 'Invitation link does not match the email']));
- 
-        //     $role = $invitation->role_id;
-        //     $company = $invitation->company_id;
- 
-        //     $invitation->update(['registered_at' => now()]);
-        // } 
-
-// if ($invitationToken) {
-//         $invitation = UserInvitation::where('token', $invitationToken)
-//             ->where('email', $request->email)
-//             ->whereNull('registered_at')
-//             ->firstOrFail();
-//     }
+        if ($invitationToken) {
+            $invitation = UserInvitation::where('token', $invitationToken)
+                ->where('email', $request->email)
+                ->whereNull('registered_at')
+                ->first();
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            
-            // 'role_id' => $invitation ?? Role::USER->value,
-            // 'company_id' => $invitation->company_id,
-             'company_id' => $invitation?->company_id,
-            'role_id' => $invitation?->role_id ?? Role::USER->value,
+            'company_id' => $invitation?->company_id,
+            'role_id' => $invitation?->role_id ?? Role::CUSTOMER->value,
         ]);
 
-    //      if ($invitation) {
-    //     $invitation->update(['registered_at' => now()]);
-    //     session()->forget('invitation_token');
-    // }
+        if ($invitation) {
+            $invitation->delete();
+            session()->forget('invitation_token');
+        }
 
-    //     event(new Registered($user));
-
-     if ($invitation) {
-        $invitation->delete();
-        session()->forget('invitation_token');
-    }
+        event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('home', absolute: false));
     }
 //     public function store(Request $request)
 // {

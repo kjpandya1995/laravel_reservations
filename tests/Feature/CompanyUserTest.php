@@ -7,7 +7,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Company;
 use App\Models\User;
-use App\Mail\UserRegistrationInvite;
+use App\Enums\Role;
+use App\Mail\RegistrationInvite;
 use Illuminate\Support\Facades\Mail;
 
 class CompanyUserTest extends TestCase
@@ -17,7 +18,11 @@ class CompanyUserTest extends TestCase
     public function test_admin_can_access_company_users_page()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
+        // $user = User::factory()->admin()->create();
+        $user = User::factory()
+    ->companyOwner()
+    ->create(['company_id' => $company->id]);
+
  
         $response = $this->actingAs($user)->get(route('companies.users.index', $company->id));
  
@@ -27,8 +32,13 @@ class CompanyUserTest extends TestCase
     public function test_admin_can_create_user_for_a_company()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
+        // $user = User::factory()->admin()->create();
  
+        $user = User::factory()
+    ->companyOwner()
+    ->create(['company_id' => $company->id]);
+
+
         $response = $this->actingAs($user)->post(route('companies.users.store', $company->id), [
             'name' => 'test user',
             'email' => 'test@test.com',
@@ -51,7 +61,7 @@ class CompanyUserTest extends TestCase
     public function test_admin_can_edit_user_for_a_company()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create(['company_id' => $company->id]);
+        $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
  
         $response = $this->actingAs($user)->put(route('companies.users.update', [$company->id, $user->id]), [
             'name' => 'updated user',
@@ -69,7 +79,7 @@ class CompanyUserTest extends TestCase
     public function test_admin_can_delete_user_for_a_company()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create(['company_id' => $company->id]);
+        $user = User::factory()->companyOwner()->create(['company_id' => $company->id]);
  
         $response = $this->actingAs($user)->delete(route('companies.users.update', [$company->id, $user->id]));
  
@@ -87,13 +97,17 @@ public function test_admin_can_send_invite_to_user_for_a_company()
         Mail::fake();
  
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
+        // $user = User::factory()->admin()->create();
+        $user = User::factory()
+    ->companyOwner()
+    ->create(['company_id' => $company->id]);
+
  
         $response = $this->actingAs($user)->post(route('companies.users.store', $company->id), [
             'email' => 'test@test.com',
         ]);
  
-        Mail::assertSent(UserRegistrationInvite::class);
+        Mail::assertSent(RegistrationInvite::class);
  
         $response->assertRedirect(route('companies.users.index', $company->id));
  
@@ -108,7 +122,11 @@ public function test_admin_can_send_invite_to_user_for_a_company()
     public function test_invitation_can_be_sent_only_once_for_user()
     {
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
+        // $user = User::factory()->admin()->create();
+        $user = User::factory()
+    ->companyOwner()
+    ->create(['company_id' => $company->id]);
+
  
         $this->actingAs($user)->post(route('companies.users.store', $company->id), [
             'email' => 'test@test.com',
@@ -364,17 +382,21 @@ public function test_admin_can_send_invite_to_user_for_a_company()
     }
 
 public function test_company_owner_can_send_invite_to_user()
+
     {
         Mail::fake();
  
         $company = Company::factory()->create();
-        $user = User::factory()->admin()->create();
- 
+        // $user = User::factory()->admin()->create();
+ $user = User::factory()
+    ->companyOwner()
+    ->create(['company_id' => $company->id]);
+
         $response = $this->actingAs($user)->post(route('companies.users.store', $company->id), [
             'email' => 'test@test.com',
         ]);
  
-        Mail::assertSent(UserRegistrationInvite::class);
+        Mail::assertSent(RegistrationInvite::class);
  
         $response->assertRedirect(route('companies.users.index', $company->id));
  

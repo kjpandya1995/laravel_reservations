@@ -12,8 +12,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\UserInvitation;
 use Illuminate\Support\Str;
-use App\Mail\RegistrationInvite;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\RegistrationInvite;
 
 
 class CompanyUserController extends Controller
@@ -57,43 +57,51 @@ Gate::authorize('view', $company);
     {
         Gate::authorize('create', $company);
 
-    
-        // $company->users()->create([
-        //     'name' => $request->name,
-        //     'email' => $request->email,
-        //     'password' => bcrypt($request->password),
-        //     'role_id' => Role::COMPANY_OWNER->value,
-        //     'company_id' => auth()->user()->company_id,
-        // ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'company_id' => $company->id,
-            'role_id' => Role::COMPANY_OWNER->value,
-            'password' => bcrypt(Str::random(10)),
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
         ]);
- 
-        // return redirect()->route('companies.users.index', $company->id);
 
-        //  $invitation = UserInvitation::create([
-        //     'email' => $request->input('email'),
-        //     'token' => Str::uuid(),
-        //     'company_id' => $company->id,
-        //     'role_id' => Role::COMPANY_OWNER->value,
-        // ]);
+        // Check for existing invitation
+        $existingInvitation = UserInvitation::where('email', $request->email)
+            ->whereNull('registered_at')
+            ->first();
+            
+        if ($existingInvitation) {
+            return back()->withErrors(['email' => 'Invitation with this email address already requested.']);
+        }
+
+        // Check if name is provided (full user creation) or just email (invitation only)
+        if ($request->has('name')) {
+            $request->validate([
+                'name' => 'required|string|max:255',
+            ]);
+            
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'company_id' => $company->id,
+                'role_id' => Role::COMPANY_OWNER->value,
+                'password' => bcrypt($request->password ?? Str::random(10)),
+            ]);
+        } else {
+            // Create user with minimal data for invitation
+            $user = User::create([
+                'name' => 'Pending User',
+                'email' => $request->email,
+                'company_id' => $company->id,
+                'role_id' => Role::COMPANY_OWNER->value,
+                'password' => bcrypt(Str::random(10)),
+            ]);
+        }
 
         $invitation = UserInvitation::create([
-        'email' => $user->email,
-        'token' => Str::uuid(),
-        'company_id' => $company->id,
-        'role_id' => Role::COMPANY_OWNER->value,
-    ]);
+            'email' => $user->email,
+            'token' => Str::uuid(),
+            'company_id' => $company->id,
+            'role_id' => Role::COMPANY_OWNER->value,
+        ]);
  
-        // Mail::to($request->input('email'))->send(new RegistrationInvite($invitation));
-        Mail::to($user->email)->send(new RegistrationInvite($invitation));
-
-        // return to_route('companies.users.index', $company);
+        Mail::to($request->email)->send(new RegistrationInvite($invitation));
 
         return redirect()->route('companies.users.index', $company);
     }

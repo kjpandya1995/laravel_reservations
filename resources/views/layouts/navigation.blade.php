@@ -9,17 +9,15 @@
                         <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
                     </a>
                 </div>
-   <div class="text-red-500 text-xs">
-    Role: {{ auth()->user()->role_id }} | Company: {{ auth()->user()->company_id ?? 'N/A' }}
-</div>
+ 
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
 
-  
+  @auth
                     @if(auth()->user()->isAdmin())
                     <x-nav-link :href="route('companies.index')" :active="request()->routeIs('companies.index')">
                         {{ __('Companies') }}
@@ -37,12 +35,14 @@
                         <x-nav-link :href="route('companies.activities.index', auth()->user()->company_id)" :active="request()->routeIs('companies.activities.*')"> 
                             {{ __('Activities') }}
                         </x-nav-link> 
-                    @endif 
+                    @endif
+                @endauth
                 </div>
             </div>
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                @auth
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -73,6 +73,14 @@
                         </form>
                     </x-slot>
                 </x-dropdown>
+                @else 
+                    <x-nav-link :href="route('login')" :active="request()->routeIs('login')">
+                        {{ __('Login') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('register')" :active="request()->routeIs('register')">
+                        {{ __('Register') }}
+                    </x-nav-link>
+                @endauth 
             </div>
 
             <!-- Hamburger -->
@@ -90,12 +98,13 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
+         @auth
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
                 <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
@@ -119,6 +128,7 @@
                 </form>
             </div>
         </div>
+        @endauth
     </div>
 </nav>
 
