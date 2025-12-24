@@ -60,6 +60,18 @@ return [
             'report' => false,
         ],
 
+        // 'activities' => [
+        //     'driver' => 'local',
+        //     'root' => storage_path('app/public/activities'),
+        //     'url' => env('APP_URL').'/storage',
+        //     'visibility' => 'public',
+        // ],
+
+        'activities' => [
+        'driver' => 'local',
+        'root' => storage_path('app/activities'),
+    ],
+
     ],
 
     /*
