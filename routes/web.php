@@ -9,6 +9,7 @@ use App\Http\Controllers\CompanyActivityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\ActivityRegistrationController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -35,6 +36,10 @@ Route::post('/users', [UserController::class, 'store']);
         Route::resource('companies.guides', CompanyGuideController::class)->except('show'); 
     Route::resource('companies.activities', CompanyActivityController::class);
 
+Route::post(
+    '/activities/{activity}/register',
+    [ActivityRegistrationController::class, 'store']
+)->name('activities.register');
 //     Route::get(
 //     '/companies/{company}/activities',
 //     [CompanyActivityController::class, 'index']

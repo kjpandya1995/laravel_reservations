@@ -22,11 +22,11 @@ class StoreActivityRequest extends FormRequest
     public function rules(): array
     {
        return [
-            'name'        => ['required'],
-            'description' => ['required'],
+            'name' => ['required', 'string'],
+            'description' => ['required', 'string'],
             'start_time'  => ['required', 'date'],
             'price'       => ['required', 'numeric'],
-            'image'       => ['image', 'nullable'],
+            'image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
             'guide_id'    => ['required', 'exists:users,id'],
         ];
     }

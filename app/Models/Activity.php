@@ -22,7 +22,7 @@ class Activity extends Model
         'description',
         'start_time',
         'price',
-        'photo'
+        'thumbnail',
     ];
  
     public function company(): BelongsTo
@@ -46,7 +46,7 @@ class Activity extends Model
     public function thumbnail(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->photo ? '/activities/thumbs/' . $this->photo : '/no_image.jpg',
+            get: fn($value) => $value ? $value : '/no_image.jpg',
         );
     }
 

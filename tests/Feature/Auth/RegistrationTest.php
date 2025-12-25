@@ -92,7 +92,7 @@ class RegistrationTest extends TestCase
             'role_id' => Role::GUIDE->value,
         ]);
  
-        $response->assertRedirect(route('dashboard'));
+        $response->assertRedirect(route('home'));
         $this->assertAuthenticated();
     }
 }

@@ -18,7 +18,13 @@ class CompanyActivityPolicy
      */
     public function viewAny(User $user, Company $company): bool
     {
-        return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $company->id;
+        // return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $company->id;
+        if ($user->role_id === Role::ADMINISTRATOR->value) {
+            return true;
+        }
+
+        return $user->role_id === Role::COMPANY_OWNER->value
+            && $user->company_id === $company->id;
     }
 
     /**
@@ -26,7 +32,12 @@ class CompanyActivityPolicy
      */
     public function view(User $user, Activity $activity): bool
     {
-        return false;
+        // return false;
+        if ($user->role_id === Role::ADMINISTRATOR->value) {
+        return true;
+    }
+
+    return $user->company_id === $activity->company_id;
     }
 
     /**
@@ -34,6 +45,10 @@ class CompanyActivityPolicy
      */
    public function create(User $user, Company $company): bool
     {
+        if ($user->role_id === Role::ADMINISTRATOR->value) {
+            return true;
+        }
+        
         return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $company->id;
     }
 
@@ -42,7 +57,13 @@ class CompanyActivityPolicy
      */
     public function update(User $user, Activity $activity): bool
     {
-        return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $activity->company_id;
+        // return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $activity->company_id;
+        if ($user->role_id === Role::ADMINISTRATOR->value) {
+            return true;
+        }
+
+        return $user->company_id === $activity->company_id;
+
     }
 
     /**
@@ -50,7 +71,13 @@ class CompanyActivityPolicy
      */
     public function delete(User $user, Activity $activity): bool
     {
-        return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $activity->company_id;
+        // return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $activity->company_id;
+    if ($user->role_id === Role::ADMINISTRATOR->value) {
+        return true;
+    }
+
+    return $user->company_id === $activity->company_id;
+
     }
 
     /**

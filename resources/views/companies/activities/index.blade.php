@@ -43,12 +43,9 @@
                                             <!-- @if($activity->photo)
                                                 <img src="{{ asset($activity->photo) }}" alt="{{ $activity->name }}" class="w-16 h-16 rounded-xl">
                                             @endif -->
-                                            @if($activity->photo)
-    {{-- thumbnail path use karein jo humne Model mein banaya tha --}}
-    <img src="{{ asset('storage' . $activity->thumbnail) }}" alt="{{ $activity->name }}" class="w-16 h-16 rounded-xl shadow-sm border">
-@else
-    <img src="{{ asset('no_image.jpg') }}" class="w-16 h-16 rounded-xl">
-@endif
+                                            @if($activity->thumbnail)
+                                                <img src="{{ asset('storage/' . $activity->thumbnail) }}" alt="{{ $activity->name }}" class="w-16 h-16 rounded-xl shadow-sm border">
+                                            @endif
                                         </td>
                                         <td class="px-6 py-4 text-sm leading-5 text-gray-900 whitespace-no-wrap">
                                             {{ $activity->name }}

@@ -26,6 +26,7 @@ class ActivityFactory extends Factory
             'description' => fake()->text(),
             'start_time'  => Carbon::now(),
             'price'       => fake()->randomNumber(5),
+            'thumbnail'   => 'activities/test.jpg',
         ];
     }
 }

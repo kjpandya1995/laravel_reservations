@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->text('description');
                 $table->dateTime('start_time');
                 $table->integer('price');
-                $table->string('photo')->nullable();
+                $table->string('thumbnail')->nullable();
                 $table->timestamps();
         });
     }

@@ -10,10 +10,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="grid grid-cols-4 gap-x-5 gap-y-8 mb-5">
+                        <div class="row">
+
                         @forelse($activities as $activity)
-                            <div>
+                            <div class="col-md-3 mb-3">
                                  <a href="{{ route('activity.show', $activity) }}"> 
-                                    <img src="{{ asset('storage' . $activity->thumbnail) }}" alt="{{ $activity->name }}">
+                                    <img src="{{ asset('storage/' . $activity->thumbnail) }}" alt="{{ $activity->name }}">
                                 </a>
                                 <!-- <img src="{{ asset($activity->thumbnail) }}" alt="{{ $activity->name }}"> -->
                                 <h2>
@@ -22,9 +24,10 @@
                                 </h2>
                                 <time>{{ $activity->start_time }}</time>
                             </div>
-                        @empty
+                            @empty
                             <p>No activities</p>
-                        @endforelse
+                            @endforelse
+                        </div>
                     </div>
  
                     <div class="mt-6">{{ $activities->links() }}</div>

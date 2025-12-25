@@ -94,7 +94,7 @@ class CompanyActivityTest extends TestCase
 
  public function test_can_upload_image()
 {
-    Storage::fake('activities');
+    Storage::fake('public');
 
     $company = Company::factory()->create();
 
@@ -115,9 +115,11 @@ class CompanyActivityTest extends TestCase
         [
             'name' => 'Test Activity',
             'description' => 'Test description',
-            'date' => now()->toDateString(),
+            'start_time' => now()->format('Y-m-d H:i'),
+            'price' => 9999,
+            'guide_id' => $guide->id,
             'guides' => [$guide->id],
-            'photo' => $file,
+            'image' => $file,
         ]
     );
 
@@ -125,9 +127,10 @@ class CompanyActivityTest extends TestCase
 
     $activity = Activity::first();
 
-    // $this->assertNotNull($activity);
+    $this->assertNotNull($activity);
+    $this->assertNotNull($activity->thumbnail);
 
-    // Storage::disk('activities')->assertExists($activity->photo);
+    Storage::disk('public')->assertExists($activity->thumbnail);
 }
 
  

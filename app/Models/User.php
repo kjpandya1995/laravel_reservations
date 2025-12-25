@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\Role as RoleEnum;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -49,7 +50,10 @@ class User extends Authenticatable
         return $this->role_id === RoleEnum::COMPANY_OWNER->value;
     }
 
-     
+     public function activities(): BelongsToMany
+    {
+        return $this->belongsToMany(Activity::class)->withTimestamps();
+    }
 
     /**
      * The attributes that should be hidden for serialization.

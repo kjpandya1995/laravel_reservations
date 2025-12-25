@@ -16,6 +16,8 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                  
+
 
   @auth
                     @if(auth()->user()->isAdmin())
