@@ -25,6 +25,11 @@ class Activity extends Model
         'thumbnail',
     ];
  
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);

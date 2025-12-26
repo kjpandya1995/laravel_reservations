@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityRegistrationController;
+use App\Http\Controllers\MyActivityController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/activities', [MyActivityController::class, 'show'])->name('my-activity.show');
+
 Route::post('/users', [UserController::class, 'store']);
 
 // Route::get('/companies', [CompanyController::class, 'index'])->name('companies.index');
@@ -39,7 +42,7 @@ Route::post('/users', [UserController::class, 'store']);
 Route::post(
     '/activities/{activity}/register',
     [ActivityRegistrationController::class, 'store']
-)->name('activities.register');
+)->middleware('auth')->name('activities.register');
 //     Route::get(
 //     '/companies/{company}/activities',
 //     [CompanyActivityController::class, 'index']
