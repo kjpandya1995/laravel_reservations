@@ -22,11 +22,16 @@ Route::get('/dashboard', function () {
 Route::get('/', HomeController::class)->name('home');
 // Route::get('/activities/{activity}',[ActivityController::class, 'show'])->name('activities.show');
 Route::get('/activities/{activity}', [App\Http\Controllers\ActivityController::class, 'show'])->name('activity.show');
+
+Route::post('/activities/{activity}/register', [ActivityController::class, 'register'])
+    ->name('activities.register');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/activities', [MyActivityController::class, 'show'])->name('my-activity.show');
+    Route::delete('/activities/{activity}', [MyActivityController::class, 'destroy'])->name('my-activity.destroy'); 
 
 Route::post('/users', [UserController::class, 'store']);
 
@@ -39,14 +44,13 @@ Route::post('/users', [UserController::class, 'store']);
         Route::resource('companies.guides', CompanyGuideController::class)->except('show'); 
     Route::resource('companies.activities', CompanyActivityController::class);
 
-Route::post(
-    '/activities/{activity}/register',
-    [ActivityRegistrationController::class, 'store']
-)->middleware('auth')->name('activities.register');
-//     Route::get(
-//     '/companies/{company}/activities',
-//     [CompanyActivityController::class, 'index']
-// )->name('companies.activities.index');
+
+
+
+    Route::get(
+    '/companies/{company}/activities',
+    [CompanyActivityController::class, 'index']
+)->name('companies.activities.index');
 });
     
 

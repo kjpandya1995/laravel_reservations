@@ -4,13 +4,13 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Models\Activity;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\Activity;
 
 class RegisteredToActivityNotification extends Notification
 {
-    use Queueable;
+    // use Queueable;
 
     /**
      * Create a new notification instance.
@@ -25,7 +25,7 @@ class RegisteredToActivityNotification extends Notification
      *
      * @return array<int, string>
      */
-    public function via(object $notifiable): array
+    public function via($notifiable): array
     {
         return ['mail'];
     }
@@ -33,12 +33,16 @@ class RegisteredToActivityNotification extends Notification
     /**
      * Get the mail representation of the notification.
      */
-    public function toMail(object $notifiable): MailMessage
+    public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
+        ->subject('You have successfully registered')
+            ->line('Thank you for registering to the activity ' . $this->activity->name)
+            ->line('Start time ' . $this->activity->start_time);
+
+            // ->line('The introduction to the notification.')
+            // ->action('Notification Action', url('/'))
+            // ->line('Thank you for using our application!');
     }
 
     /**

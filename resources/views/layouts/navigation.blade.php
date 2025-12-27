@@ -63,6 +63,9 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link :href="route('my-activity.show')"> 
+                            {{ __('My Activities') }}
+                        </x-dropdown-link> 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

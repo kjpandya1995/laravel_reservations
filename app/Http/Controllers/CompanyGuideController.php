@@ -53,11 +53,14 @@ class CompanyGuideController extends Controller
             return back()->withErrors(['email' => 'Invitation with this email address already requested.']);
         }
         
+// Step 2: Check if user already exists
+    $user = User::where('email', $request->email)->first();
+
         // Check if name is provided (full user creation) or just email (invitation only)
-        if ($request->has('name')) {
+        if (!$user) {
             // Create full user
             $user = User::create([
-                'name' => $request->name,
+                'name' => $request->name?: 'Pending User', 
                 'email' => $request->email,
                 'company_id' => $company->id,
                 'role_id' => Role::GUIDE->value,
@@ -65,13 +68,16 @@ class CompanyGuideController extends Controller
             ]);
         } else {
             // Create user with minimal data for invitation
-            $user = User::create([
-                'name' => 'Pending User',
-                'email' => $request->email,
-                'company_id' => $company->id,
-                'role_id' => Role::GUIDE->value,
-                'password' => bcrypt(Str::random(10)),
-            ]);
+            // $user = User::create([
+            //     'name' => 'Pending User',
+            //     'email' => $request->email,
+            //     'company_id' => $company->id,
+            //     'role_id' => Role::GUIDE->value,
+            //     'password' => bcrypt(Str::random(10)),
+            // ]);
+            $user->company_id = $company->id;
+        $user->role_id = Role::GUIDE->value;
+        $user->save();
         }
 
         $invitation = UserInvitation::create([
