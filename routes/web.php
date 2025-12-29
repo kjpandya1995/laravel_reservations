@@ -11,14 +11,16 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ActivityRegistrationController;
 use App\Http\Controllers\MyActivityController;
+use App\Http\Controllers\GuideActivityController;
 
 // Route::get('/', function () {
 //     return view('welcome');
 // });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect()->route('my-activity.show');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 Route::get('/', HomeController::class)->name('home');
 // Route::get('/activities/{activity}',[ActivityController::class, 'show'])->name('activities.show');
 Route::get('/activities/{activity}', [App\Http\Controllers\ActivityController::class, 'show'])->name('activity.show');
@@ -32,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/activities', [MyActivityController::class, 'show'])->name('my-activity.show');
     Route::delete('/activities/{activity}', [MyActivityController::class, 'destroy'])->name('my-activity.destroy'); 
+    Route::get('/guides/activities', [GuideActivityController::class, 'show'])->name('guide-activity.show'); 
 
 Route::post('/users', [UserController::class, 'store']);
 
