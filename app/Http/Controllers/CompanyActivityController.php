@@ -13,15 +13,23 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreActivityRequest;
 use App\Http\Requests\UpdateActivityRequest;
 use Intervention\Image\Laravel\Facades\Image;
+
+
 class CompanyActivityController extends Controller
 {
+    
     public function index(Company $company)
     {
-        // Gate::authorize('view', $company); 
+        // Guide ke liye: sirf apni company ki activities
+        if (auth()->user()->role_id === Role::GUIDE->value) {
+            Gate::authorize('viewAny', [Activity::class, $company]);
+            $company->load('activities');
+            return view('companies.activities.index', compact('company'));
+        }
+        
+        // Company owner aur admin ke liye
         Gate::authorize('viewAny', [Activity::class, $company]);
-
         $company->load('activities');
- 
         return view('companies.activities.index', compact('company'));
     }
  
@@ -85,6 +93,7 @@ class CompanyActivityController extends Controller
 
 public function store(StoreActivityRequest $request, Company $company)
     {
+
         Gate::authorize('create', [Activity::class, $company]);
 
         // ✅ image upload
@@ -96,11 +105,13 @@ public function store(StoreActivityRequest $request, Company $company)
         $data['thumbnail'] = $filename;
 
         // ✅ guide assign (tests ke liye important)
-        if ($request->filled('guide_id')) {
-            $data['guide_id'] = $request->guide_id;
-        }
+        // if ($request->filled('guide_id')) {
+        //     $data['guide_id'] = $request->guide_id;
+        // }
+
+        $data['guide_id'] = $request->guide_id;
         
-        $activity = Activity::create($data);
+        Activity::create($data);
 
         // ✅ participants sync
         // if ($request->filled('guides')) {

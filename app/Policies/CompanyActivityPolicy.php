@@ -18,12 +18,12 @@ class CompanyActivityPolicy
      */
     public function viewAny(User $user, Company $company): bool
     {
-        // return $user->role_id === Role::COMPANY_OWNER->value && $user->company_id === $company->id;
         if ($user->role_id === Role::ADMINISTRATOR->value) {
             return true;
         }
 
-        return $user->role_id === Role::COMPANY_OWNER->value
+        // Company owner aur guide dono ko activities dekh sakte hain
+        return ($user->role_id === Role::COMPANY_OWNER->value || $user->role_id === Role::GUIDE->value)
             && $user->company_id === $company->id;
     }
 

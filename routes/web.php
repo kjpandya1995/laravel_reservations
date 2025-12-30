@@ -24,6 +24,7 @@ Route::get('/dashboard', function () {
 Route::get('/', HomeController::class)->name('home');
 // Route::get('/activities/{activity}',[ActivityController::class, 'show'])->name('activities.show');
 Route::get('/activities/{activity}', [App\Http\Controllers\ActivityController::class, 'show'])->name('activity.show');
+Route::get('/guides/activities/{activity}/pdf', [GuideActivityController::class, 'export'])->name('guide-activity.export'); 
 
 Route::post('/activities/{activity}/register', [ActivityController::class, 'register'])
     ->name('activities.register');
@@ -34,7 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/activities', [MyActivityController::class, 'show'])->name('my-activity.show');
     Route::delete('/activities/{activity}', [MyActivityController::class, 'destroy'])->name('my-activity.destroy'); 
-    Route::get('/guides/activities', [GuideActivityController::class, 'show'])->name('guide-activity.show'); 
+    Route::get('/guides/activities', [GuideActivityController::class, 'index'])->name('guide-activity.show'); 
 
 Route::post('/users', [UserController::class, 'store']);
 
