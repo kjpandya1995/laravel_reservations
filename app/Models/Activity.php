@@ -37,7 +37,9 @@ class Activity extends Model
  
     public function participants()
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class, 'activity_user')
+                    ->withTimestamps()
+                    ->withPivot('created_at', 'updated_at');
     }
 
     public function price(): Attribute
@@ -51,7 +53,19 @@ class Activity extends Model
     public function thumbnail(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => $value ? $value : '/no_image.jpg',
+            get: function ($value) {
+                // If image exists in database
+                if ($value) {
+                    $filePath = storage_path('app/public/' . $value);
+                    if (file_exists($filePath)) {
+                        // Use direct file serving route
+                        return route('image.serve', ['path' => $value]);
+                    }
+                }
+                
+                // Default image if no thumbnail
+                return asset('no_image.svg');
+            }
         );
     }
 

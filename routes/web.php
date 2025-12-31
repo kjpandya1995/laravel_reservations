@@ -22,6 +22,16 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/', HomeController::class)->name('home');
+
+// Image serving route
+Route::get('/image/{path}', function ($path) {
+    $filePath = storage_path('app/public/' . $path);
+    if (file_exists($filePath)) {
+        return response()->file($filePath);
+    }
+    abort(404);
+})->where('path', '.*')->name('image.serve');
+
 // Route::get('/activities/{activity}',[ActivityController::class, 'show'])->name('activities.show');
 Route::get('/activities/{activity}', [App\Http\Controllers\ActivityController::class, 'show'])->name('activity.show');
 Route::get('/guides/activities/{activity}/pdf', [GuideActivityController::class, 'export'])->name('guide-activity.export'); 
@@ -47,9 +57,6 @@ Route::post('/users', [UserController::class, 'store']);
         ->middleware('isAdmin');
         Route::resource('companies.guides', CompanyGuideController::class)->except('show'); 
     Route::resource('companies.activities', CompanyActivityController::class);
-
-
-
 
     Route::get(
     '/companies/{company}/activities',

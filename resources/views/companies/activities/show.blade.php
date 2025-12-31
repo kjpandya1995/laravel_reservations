@@ -20,7 +20,7 @@
                             </x-secondary-button>
                         </form>
                     @endif {{-- [tl! add:end] --}}
-                    <img src="{{ asset('storage/' . $activity->thumbnail) }}" alt="{{ $activity->name }}">
+                    <img src="{{ $activity->thumbnail }}" alt="{{ $activity->name }}">
                     <h2>${{ $activity->price }}</h2>
                     <time>{{ $activity->start_time }}</time>
                     <div>Company: {{ $activity->company->name }}</div>

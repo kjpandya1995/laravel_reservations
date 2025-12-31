@@ -16,7 +16,7 @@
                         @forelse($activities as $activity)
                             <div class="space-y-3">
                                 <a href="{{ route('activity.show', $activity) }}">
-                                    <img src="{{ asset('storage/' . $activity->thumbnail) }}" alt="{{ $activity->name }}"></a>
+                                    <img src="{{  $activity->thumbnail }}" alt="{{ $activity->name }}"></a>
 
                                 <h2>
                                     <a href="{{ route('activity.show', $activity) }}" class="text-lg font-semibold">{{ $activity->name }}</a>
